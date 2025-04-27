@@ -56,8 +56,8 @@ public class LoginController extends HttpServlet {
 		String username = req.getParameter("username");
 		String password = req.getParameter("password");
 
-		UserModel studentModel = new UserModel(username, password);
-		Boolean loginStatus = loginService.loginUser(studentModel);
+		UserModel userModel = new UserModel(username, password);
+		Boolean loginStatus = loginService.loginUser(userModel);
 
 		if (loginStatus != null && loginStatus) {
 			SessionUtil.setAttribute(req, "username", username);
@@ -65,7 +65,7 @@ public class LoginController extends HttpServlet {
 				CookieUtil.addCookie(resp, "role", "admin", 5 * 30);
 				resp.sendRedirect(req.getContextPath() + "/admin/dashboard"); 
 			} else {
-				CookieUtil.addCookie(resp, "role", "student", 5 * 30);
+				CookieUtil.addCookie(resp, "role", "customer", 5 * 30);
 				resp.sendRedirect(req.getContextPath() + "/home"); // Redirect to /home
 			}
 		} else {
