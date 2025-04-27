@@ -1,0 +1,117 @@
+@charset "UTF-8";
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f1ea;
+    }
+    
+    .header-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      background-color: white;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .brand {
+      font-size: 32px;
+      font-weight: bold;
+      color: #333;
+      letter-spacing: 1px;
+    }
+    
+    .nav-menu {
+      display: flex;
+      list-style: none;
+    }
+    
+    .nav-menu li {
+      margin: 0 18px;  
+    }
+    
+    .nav-menu li a {
+      color: #666;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-size: 16px;  
+      font-weight: 500;  
+      letter-spacing: 0.5px;
+      transition: color 0.3s;
+    }
+    
+    .nav-menu li a:hover {
+      color: #6b563d;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-container {
+      position: relative;
+      margin-right: 20px;
+    }
+    
+    .search-form {
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 180px;
+    }
+    
+    .search-button {
+      background-color: #6b563d;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin-left: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .login-link {
+      color: #6b563d;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px; 
+      padding: 8px 15px;
+      border: 1px solid #6b563d;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    
+    .login-link:hover {
+      background-color: #6b563d;
+      color: white;
+    }
+	    .header-right {
+	  display: flex;
+	  align-items: center;
+	  gap: 15px;
+	}
+	
+	.profile-icon {
+	  color: #333;
+	  text-decoration: none;
+	}
+	
+	.profile-icon:hover {
+	  color: #6b563d;
+	}
+	    
+  

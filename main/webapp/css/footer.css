@@ -1,0 +1,121 @@
+@charset "UTF-8";
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f1ea;
+    }
+    
+    .footer {
+      background-color: #6b563d;
+      color: #e6d9c2;
+      padding: 60px 50px 30px;
+    }
+    
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .footer-column {
+      flex: 1;
+      margin-right: 10px;
+    }
+    
+    .footer-column:last-child {
+      margin-right: 0;
+      padding-left: 130px;
+    }
+    
+    .footer-column h3 {
+      color: #e6d9c2;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .footer-column ul {
+      list-style: none;
+    }
+    
+    .footer-column ul li {
+      margin-bottom: 12px;
+    }
+    
+    .footer-column ul li a {
+      color: #e6d9c2;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .footer-column ul li a:hover {
+      color: white;
+    }
+    
+    .footer-center {
+      text-align: center;
+    }
+    
+    .footer-logo {
+      font-size: 36px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 20px;
+    }
+    
+    .footer-description {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .social-icon {
+      width: 36px;
+      height: 36px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 8px;
+      transition: background-color 0.3s;
+    }
+    
+    .social-icon:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .social-icon a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .contact-info {
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 30px;
+      margin-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+      color: #e6d9c2;
+    }
+  
