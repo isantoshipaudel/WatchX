@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css"
 	href="${contextPath}/css/message_hanlder.css" />
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>WatchX- messageHandler</title>
 
 </head>
 <body>

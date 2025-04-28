@@ -14,6 +14,117 @@
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" type="text/css"
 	href="${contextPath}/css/register.css" />
+<style>
+.popup-message {
+	position: fixed;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	min-width: 320px;
+	max-width: 400px;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 9999;
+	animation: fadeIn 0.5s, fadeOut 0.5s 4.5s;
+	overflow: hidden;
+}
+
+.popup-content {
+	display: flex;
+	padding: 20px;
+	align-items: center;
+	position: relative;
+}
+
+.popup-icon {
+	margin-right: 15px;
+}
+
+.icon-circle {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.icon-circle.success {
+	background-color: #4CAF50;
+}
+
+.icon-circle.error {
+	background-color: #f44336;
+}
+
+.checkmark, .exclamation {
+	font-size: 24px;
+}
+
+.popup-text {
+	flex: 1;
+}
+
+.popup-text h3 {
+	font-size: 20px;
+	margin: 0 0 5px 0;
+	color: #333;
+}
+
+.popup-text p {
+	margin: 0;
+	color: #666;
+	font-size: 16px;
+}
+
+.close-btn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: none;
+	border: none;
+	font-size: 24px;
+	color: #999;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+}
+
+/* Success and error specific styling */
+.popup-success {
+	border-bottom: 4px solid #4CAF50;
+}
+
+.popup-error {
+	border-bottom: 4px solid #f44336;
+}
+
+@
+keyframes fadeIn {from { opacity:0;
+	transform: translate(-50%, -20px);
+}
+
+to {
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+
+}
+@
+keyframes fadeOut {from { opacity:1;
+	transform: translate(-50%, 0);
+}
+
+to {
+	opacity: 0;
+	transform: translate(-50%, -20px);
+}
+}
+</style>
 
 </head>
 <body>
@@ -34,6 +145,7 @@
 		<div class="right-panel">
 			<h2>Register</h2>
 			<p class="tagline-text">Create your WatchX account now</p>
+
 
 			<!-- Hidden popup messages -->
 			<c:if test="${not empty error}">
@@ -68,7 +180,6 @@
 					</div>
 				</div>
 			</c:if>
-
 
 			<form id="registration-form" action="${contextPath}/register"
 				method="post">
@@ -120,7 +231,6 @@
 			</form>
 		</div>
 	</div>
-
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 			// Handle error popup

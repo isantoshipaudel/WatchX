@@ -13,9 +13,6 @@
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <link rel="stylesheet" type="text/css"
 	href="${contextPath}/css/loginpage.css" />
-<!-- <style>
-/* Popup message styles */
-</style> -->
 </head>
 <body>
 <jsp:include page="message_handler.jsp"/>
@@ -68,52 +65,5 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- <script>
-		document.addEventListener('DOMContentLoaded', function() {
-			// Handle error popup
-			const errorPopup = document.getElementById('errorPopup');
-			if (errorPopup) {
-				// Handle close button click
-				const closeBtn = errorPopup.querySelector('.close-btn');
-				closeBtn.addEventListener('click', function() {
-					errorPopup.style.opacity = '0';
-					setTimeout(function() {
-						errorPopup.style.display = 'none';
-					}, 500);
-				});
-
-				// Auto-hide after 5 seconds
-				setTimeout(function() {
-					errorPopup.style.opacity = '0';
-					setTimeout(function() {
-						errorPopup.style.display = 'none';
-					}, 500);
-				}, 5000);
-			}
-
-			// Handle success popup
-			const successPopup = document.getElementById('successPopup');
-			if (successPopup) {
-				// Handle close button click
-				const closeBtn = successPopup.querySelector('.close-btn');
-				closeBtn.addEventListener('click', function() {
-					successPopup.style.opacity = '0';
-					setTimeout(function() {
-						successPopup.style.display = 'none';
-					}, 500);
-				});
-
-				// Auto-hide after 5 seconds
-				setTimeout(function() {
-					successPopup.style.opacity = '0';
-					setTimeout(function() {
-						successPopup.style.display = 'none';
-					}, 500);
-				}, 5000);
-			}
-		});
-	</script>
- -->
 </body>
 </html>

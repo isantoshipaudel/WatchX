@@ -51,7 +51,7 @@
 		</div>
 
 		<div class="watch-card">
-			<img src="resources/images/81k0OoHZRpL._AC_SX679_.jpg" alt="Edifice Neon Illuminator"
+			<img src="resources/images/image3.jpg" alt="Edifice Neon Illuminator"
 				class="watch-img">
 			<h3 class="watch-title">Edifice Neon Illuminator</h3>
 			<p class="watch-model">Model : EFR-539BK-1AVUEF</p>
@@ -71,7 +71,7 @@
   <div class="carousel">
     <div class="watch-slide">
       <div class="watch-card">
-        <img src="watch1.png" alt="Best Seller 1" class="watch-img">
+        <img src="resources/images/Watch4.jpg" alt="Best Seller 1" class="watch-img">
         <div class="date-circle">
           <span class="day">29</span><br><span class="month">Aug</span>
         </div>
@@ -80,7 +80,7 @@
     </div>
     <div class="watch-slide">
       <div class="watch-card">
-        <img src="watch2.png" alt="Best Seller 2" class="watch-img">
+        <img src="resources/images/Watch5.jpg" alt="Best Seller 2" class="watch-img">
         <div class="date-circle">
           <span class="day">28</span><br><span class="month">Aug</span>
         </div>
@@ -88,7 +88,7 @@
     </div>
     <div class="watch-slide">
       <div class="watch-card">
-        <img src="watch3.png" alt="Best Seller 3" class="watch-img">
+        <img src="resources/images/Watch6.jpg" alt="Best Seller 3" class="watch-img">
         <div class="date-circle">
           <span class="day">26</span><br><span class="month">Aug</span>
         </div>
