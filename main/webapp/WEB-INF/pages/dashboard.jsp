@@ -19,7 +19,7 @@
         <div class="logo">WatchX</div>
         <ul class="nav-menu">
             <li class="active"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></li>
-            <li><i class="fas fa-clock"></i> <span><a href="${contextPath}/admin/products">Products</a></span></li>
+            <li><i class="fas fa-clock"></i> <span><a href="${contextPath}/admin/dashboard/products">Products</a></span></li>
             <li><i class="fas fa-users"></i> <span>Customers</span></li>
             <li><i class="fas fa-file-alt"></i> <span>Reports</span></li>
         </ul>

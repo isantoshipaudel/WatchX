@@ -22,7 +22,7 @@ public class AuthenticationFilter implements Filter {
     private static final String HOME = "/home";
     private static final String ROOT = "/";
     private static final String DASHBOARD = "/admin/dashboard";
-    private static final String PRODUCT_MANAGEMENT = "/admin/products";
+    private static final String PRODUCT_MANAGEMENT = "/admin/dashboard/products";
     private static final String USER_MANAGEMENT = "/admin/users";
     private static final String ORDER_MANAGEMENT = "/admin/orders";
     private static final String SHOP = "/shop";
@@ -30,7 +30,7 @@ public class AuthenticationFilter implements Filter {
     private static final String ABOUT = "/aboutUs";
     private static final String CONTACT = "/contact";
     private static final String USER_ORDERS = "/account/orders";
-    private static final String CHECKOUT = "/checkout";
+    private static final String UPDATE = "/update";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -73,7 +73,7 @@ public class AuthenticationFilter implements Filter {
                 res.sendRedirect(req.getContextPath() + HOME);
             } else if (uri.endsWith(HOME) || uri.endsWith(ROOT) || uri.endsWith(SHOP) || 
                     uri.endsWith(PRODUCT_DETAILS) || uri.endsWith(ABOUT) || uri.endsWith(CONTACT) ||
-                    uri.endsWith(USER_ORDERS) || uri.endsWith(CHECKOUT)) {
+                    uri.endsWith(USER_ORDERS) || uri.endsWith(UPDATE)) {
                 chain.doFilter(request, response);
             } else {
                 //res.sendRedirect(req.getContextPath() + HOME);
