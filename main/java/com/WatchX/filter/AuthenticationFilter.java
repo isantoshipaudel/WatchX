@@ -26,12 +26,13 @@ public class AuthenticationFilter implements Filter {
     private static final String USER_MANAGEMENT = "/admin/users";
     private static final String ORDER_MANAGEMENT = "/admin/orders";
     private static final String ADD_Products = "/admin/addProduct"; 
+    private static final String UPDATE_Products = "/admin/updateProduct";
     private static final String PRODUCT_DETAILS = "/collections";
     private static final String ABOUT = "/aboutUs";
     private static final String CONTACT = "/contact";
     private static final String USER_ORDERS = "/account/orders";
     private static final String UPDATE = "/update";
-    
+    private static final String DELETE = "/admin/deleteProduct";
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // Initialization logic, if required
@@ -58,8 +59,8 @@ public class AuthenticationFilter implements Filter {
             if (uri.endsWith(LOGIN) || uri.endsWith(REGISTER)) {
                 res.sendRedirect(req.getContextPath() + DASHBOARD);
             } else if (uri.endsWith(HOME) || uri.endsWith(ROOT) ||
-                       uri.endsWith(ADD_Products) || uri.endsWith(PRODUCT_MANAGEMENT) || 
-                       uri.endsWith(ABOUT) || uri.endsWith(CONTACT)) {
+                       uri.endsWith(ADD_Products) || uri.endsWith(UPDATE_Products) || uri.endsWith(PRODUCT_MANAGEMENT) || 
+                       uri.endsWith(ABOUT) || uri.endsWith(CONTACT) || uri.endsWith(UPDATE) || uri.endsWith(DELETE)) {
                 chain.doFilter(request, response);
             } else {
                 // Let admin access other allowed pages or restrict if needed

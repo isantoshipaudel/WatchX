@@ -1,3 +1,4 @@
+
 package com.WatchX.util;
 
 import jakarta.servlet.http.Part;
@@ -18,23 +19,29 @@ public class ImageUtil {
         return "default.png";
     }
 
-    // Uploads image to the given folder and returns success status
-    public boolean uploadImage(Part part, String folderName) {
-        String savePath = getSavePath(folderName);
-        File saveDir = new File(savePath);
-        if (!saveDir.exists() && !saveDir.mkdirs()) {
-            return false;
-        }
+    public boolean uploadImage(Part part, String rootPath, String saveFolder) {
+		String savePath = getSavePath(saveFolder);
+		File fileSaveDir = new File(savePath);
 
-        try {
-            String imageName = getImageNameFromPart(part);
-            part.write(savePath + File.separator + imageName);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+		// Ensure the directory exists
+		if (!fileSaveDir.exists()) {
+			if (!fileSaveDir.mkdir()) {
+				return false; // Failed to create the directory
+			}
+		}
+		try {
+			// Get the image name
+			String imageName = getImageNameFromPart(part);
+			// Create the file path
+			String filePath = savePath + "/" + imageName;
+			// Write the file to the server
+			part.write(filePath);
+			return true; // Upload successful
+		} catch (IOException e) {
+			e.printStackTrace(); // Log the exception
+			return false; // Upload failed
+		}
+	}
 
     // Returns absolute path for saving images
     public String getSavePath(String folderName) {

@@ -43,16 +43,10 @@ public class AddService {
         }
     }
 
-    // Update an existing product
-    public boolean updateProduct(ProductModel product) throws SQLException {
-        String sql = "UPDATE Product SET " +
-                     "productName = ?, " +
-                     "description = ?, " +
-                     "category = ?, " +
-                     "unitPrice = ?, " +
-                     "image_path = ? " +
-                     "WHERE productNo = ?";
-        
+ // Update an existing product
+    public boolean updateProduct(ProductModel product) {
+        String sql = "UPDATE Product SET productName = ?, description = ?, category = ?, unitPrice = ?, image_path = ? WHERE productNo = ?";
+
         try (PreparedStatement stmt = dbConn.prepareStatement(sql)) {
             stmt.setString(1, product.getProductName());
             stmt.setString(2, product.getDescription());
@@ -60,11 +54,13 @@ public class AddService {
             stmt.setString(4, product.getUnitPrice());
             stmt.setString(5, product.getimage_path());
             stmt.setInt(6, product.getProductNo());
-            
+
             return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating product: " + e.getMessage());
+            return false;
         }
     }
-
     // Get product by ID
     public ProductModel getProductById(int productNo) throws SQLException {
         String sql = "SELECT * FROM Product WHERE productNo = ?";
@@ -140,15 +136,33 @@ public class AddService {
         return products;
     }
 
-    // Delete a product
-    public boolean deleteProduct(int productNo) throws SQLException {
+    public boolean deleteProduct(int productNo) {
         String sql = "DELETE FROM Product WHERE productNo = ?";
+        System.out.println("Attempting to delete product: " + productNo);
         
-        try (PreparedStatement stmt = dbConn.prepareStatement(sql)) {
-            stmt.setInt(1, productNo);
-            return stmt.executeUpdate() > 0;
+        try {
+            if (dbConn == null || dbConn.isClosed()) {
+                System.err.println("Database connection error");
+                return false;
+            }
+
+            try (PreparedStatement stmt = dbConn.prepareStatement(sql)) {
+                stmt.setInt(1, productNo);
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println("Delete affected " + rowsAffected + " rows");
+
+                return rowsAffected > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error deleting product: " + e.getMessage());
+            
+            if (e.getMessage().contains("foreign key constraint")) {
+                System.err.println("Product is referenced in other tables");
+            }
+            return false;
         }
     }
+
 
     public void close() throws SQLException {
         if (dbConn != null && !dbConn.isClosed()) {

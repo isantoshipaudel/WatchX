@@ -28,7 +28,6 @@ public class AddController extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Display the add product form
         request.getRequestDispatcher("/WEB-INF/pages/AddProduct.jsp").forward(request, response);
     }
 
@@ -44,21 +43,24 @@ public class AddController extends HttpServlet {
             
             // Handle file upload
             Part filePart = request.getPart("productImage");
-            String fileName = filePart.getSubmittedFileName();
+            String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+            
+            // Get the absolute path to the webapp directory
+            String appPath = request.getServletContext().getRealPath("");
             
             // Create uploads directory if it doesn't exist
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+            String uploadPath = appPath + "resources/images/uploads";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
-                uploadDir.mkdir();
+                uploadDir.mkdirs();
             }
             
             // Save the file
             String filePath = uploadPath + File.separator + fileName;
             filePart.write(filePath);
             
-            // Relative path to store in DB
-            String imagePath = "uploads/" + fileName;
+            // Relative path to store in DB (for web access)
+            String imagePath = "resources/images/uploads/" + fileName;
 
             // Create product model
             ProductModel product = new ProductModel(
@@ -77,15 +79,15 @@ public class AddController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard/products?success=true");
             } else {
                 request.setAttribute("error", "Failed to add product. Please try again.");
-                request.getRequestDispatcher("/WEB-INF/pages/AddProduct.jsp").forward(request, response);
+                doGet(request, response);
             }
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Invalid product number format. Please enter a valid number.");
-            request.getRequestDispatcher("/WEB-INF/pages/AddProduct.jsp").forward(request, response);
+            doGet(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/pages/AddProduct.jsp").forward(request, response);
+            doGet(request, response);
         }
     }
 
