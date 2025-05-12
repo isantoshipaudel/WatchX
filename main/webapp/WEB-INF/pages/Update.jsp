@@ -6,7 +6,6 @@
 <%@ page import="jakarta.servlet.http.HttpServletRequest"%>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,6 @@
 <!-- Set contextPath variable for reuse -->
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <style>
-@charset "UTF-8";
 
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -30,7 +28,7 @@ body {
 .container {
     display: flex;
     width: 1100px;
-    height: 1000px;
+    height: 1300px;
     background-color: #fff;
     border-radius: 8px;
     overflow: hidden;
@@ -111,6 +109,7 @@ body {
 
 .right-panel h2 {
     font-size: 36px;
+    margin-top: 130px;  
     margin-bottom: 10px;
     color: #333;
     font-weight: 600;
@@ -354,6 +353,7 @@ body {
 </style>
 </head>
 <body>
+    <jsp:include page="message_handler.jsp" />
     <div class="container">
         <div class="left-panel">
             <h1>WatchX</h1>
@@ -375,7 +375,7 @@ body {
             <h2>Update Profile</h2>
             <p class="tagline-text">Keep your WatchX account information up to date</p>
 
-            <!-- Hidden popup messages -->
+            <!-- Error/Success Messages -->
             <c:if test="${not empty error}">
                 <div id="errorPopup" class="popup-message popup-error">
                     <div class="popup-content">
@@ -385,14 +385,15 @@ body {
                             </div>
                         </div>
                         <div class="popup-text">
-                            <h3>Oh no!</h3>
+                            <h3>Error!</h3>
                             <p>${error}</p>
                         </div>
                         <button class="close-btn">&times;</button>
                     </div>
                 </div>
             </c:if>
-            <c:if test="${not empty success}">
+            
+            <c:if test="${not empty message}">
                 <div id="successPopup" class="popup-message popup-success">
                     <div class="popup-content">
                         <div class="popup-icon">
@@ -401,48 +402,70 @@ body {
                             </div>
                         </div>
                         <div class="popup-text">
-                            <h3>Congratulations!</h3>
-                            <p>${success}</p>
+                            <h3>Success!</h3>
+                            <p>${message}</p>
                         </div>
                         <button class="close-btn">&times;</button>
                     </div>
                 </div>
             </c:if>
 
-            <form id="update-form" action="${contextPath}/updateProfile" method="post">
+            <form id="update-form" action="${contextPath}/update" method="post">
                 <div class="form-row">
                     <div class="form-col">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
-                            <input type="text" id="firstName" name="firstName" value="${user.firstName}" required>
+                            <input type="text" id="firstName" name="firstName" 
+                                value="${user.firstName}" required>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group">
                             <label for="lastName">Last Name</label>
-                            <input type="text" id="lastName" name="lastName" value="${user.lastName}" required>
+                            <input type="text" id="lastName" name="lastName" 
+                                value="${user.lastName}" required>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" value="${user.username}" required>
+                    <input type="text" id="username" name="username" 
+                        value="${user.userName}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="${user.email}" required>
+                    <label for="Email">Email</label>
+                    <input type="email" id="Email" name="Email" 
+                        value="${user.email}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="contact">Contact No</label>
-                    <input type="tel" id="contact" name="contact" value="${user.contact}" required>
+                    <label for="contactNo">Contact No</label>
+                    <input type="tel" id="contactNo" name="contactNo" 
+                        value="${user.contactNumber}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="address">Address</label>
-                    <input type="text" id="address" name="address" value="${user.address}" required>
+                    <input type="text" id="address" name="address" 
+                        value="${user.address}" required>
+                </div>
+
+                <!-- Password Update Section -->
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password (leave blank to keep current)</label>
+                    <input type="password" id="newPassword" name="newPassword">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword">
                 </div>
 
                 <button type="submit" class="btn">Save Changes</button>
@@ -455,47 +478,31 @@ body {
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle error popup
-            const errorPopup = document.getElementById('errorPopup');
-            if (errorPopup) {
-                // Handle close button click
-                const closeBtn = errorPopup.querySelector('.close-btn');
-                closeBtn.addEventListener('click', function() {
-                    errorPopup.style.opacity = '0';
-                    setTimeout(function() {
-                        errorPopup.style.display = 'none';
-                    }, 500);
+            // Handle popup close buttons
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.popup-message').style.display = 'none';
                 });
+            });
 
-                // Auto-hide after 5 seconds
-                setTimeout(function() {
-                    errorPopup.style.opacity = '0';
-                    setTimeout(function() {
-                        errorPopup.style.display = 'none';
-                    }, 500);
-                }, 5000);
-            }
-
-            // Handle success popup
-            const successPopup = document.getElementById('successPopup');
-            if (successPopup) {
-                // Handle close button click
-                const closeBtn = successPopup.querySelector('.close-btn');
-                closeBtn.addEventListener('click', function() {
-                    successPopup.style.opacity = '0';
-                    setTimeout(function() {
-                        successPopup.style.display = 'none';
-                    }, 500);
+            // Auto-hide popups after 5 seconds
+            setTimeout(() => {
+                document.querySelectorAll('.popup-message').forEach(popup => {
+                    popup.style.display = 'none';
                 });
+            }, 5000);
 
-                // Auto-hide after 5 seconds
-                setTimeout(function() {
-                    successPopup.style.opacity = '0';
-                    setTimeout(function() {
-                        successPopup.style.display = 'none';
-                    }, 500);
-                }, 5000);
-            }
+            // Password validation
+            const form = document.getElementById('update-form');
+            form.addEventListener('submit', function(e) {
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (newPassword && newPassword !== confirmPassword) {
+                    e.preventDefault();
+                    alert('New password and confirmation do not match');
+                }
+            });
         });
     </script>
 </body>

@@ -1,9 +1,11 @@
 package com.WatchX.util;
 
 import java.util.regex.Pattern;
+import jakarta.servlet.http.Part; // ✅ Import for Part used in image validation
 
 public class ValidationUtil {
-	  // 1. Validate if a field is null or empty
+
+    // 1. Validate if a field is null or empty
     public static boolean isNullOrEmpty(String value) {
         return value == null || value.trim().isEmpty();
     }
@@ -17,45 +19,46 @@ public class ValidationUtil {
     public static boolean isAlphanumericStartingWithLetter(String value) {
         return value != null && value.matches("^[a-zA-Z][a-zA-Z0-9]*$");
     }
-    // 1. Validate name fields (2-50 chars, letters, spaces, and hyphens)
+
+    // 4. Validate name fields (2-50 chars, letters, spaces, and hyphens)
     public static boolean isValidName(String name) {
         return name != null && name.matches("^[a-zA-Z\\s-]{2,50}$");
     }
 
-    // 2. Validate username (4-20 chars, alphanumeric + underscore)
+    // 5. Validate username (4-20 chars, alphanumeric + underscore)
     public static boolean isValidUsername(String username) {
         return username != null && username.matches("^[a-zA-Z0-9_]{4,20}$");
     }
 
-    // 3. Validate email address
+    // 6. Validate email address
     public static boolean isValidEmail(String email) {
         String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
         return email != null && Pattern.matches(emailRegex, email);
     }
 
-    // 4. Validate phone number (Nepali format: 98XXXXXXXX)
+    // 7. Validate phone number (Nepali format: 98XXXXXXXX)
     public static boolean isValidPhoneNumber(String number) {
         return number != null && number.matches("^98\\d{8}$");
     }
 
-    // 5. Validate address (5-100 chars, allows letters, numbers, spaces, and basic punctuation)
+    // 8. Validate address (5-100 chars, allows letters, numbers, spaces, and basic punctuation)
     public static boolean isValidAddress(String address) {
         return address != null && address.matches("^[a-zA-Z0-9\\s.,-]{5,100}$");
     }
 
-    // 6. Validate password (8+ chars, 1 uppercase, 1 lowercase, 1 number)
+    // 9. Validate password (8+ chars, 1 uppercase, 1 lowercase, 1 number)
     public static boolean isValidPassword(String password) {
         return password != null && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
     }
 
-    // 7. Validate if password and retype password match
+    // 10. Validate if password and retype password match
     public static boolean doPasswordsMatch(String password, String retypePassword) {
         return password != null && password.equals(retypePassword);
     }
 
-    // 8. Validate all registration fields at once
+    // 11. Validate all registration fields at once
     public static String validateRegistration(
-        String firstName, 
+        String firstName,
         String lastName,
         String username,
         String email,
@@ -67,31 +70,45 @@ public class ValidationUtil {
         if (!isValidName(firstName)) {
             return "First name must be 2-50 letters (with spaces or hyphens)";
         }
-        
+
         if (!isValidName(lastName)) {
             return "Last name must be 2-50 letters (with spaces or hyphens)";
         }
-        
+
         if (!isValidUsername(username)) {
             return "Username must be 4-20 characters (letters, numbers, underscores)";
         }
-        
+
         if (!isValidEmail(email)) {
             return "Please enter a valid email address";
         }
-        
+
         if (!isValidPhoneNumber(contact)) {
             return "Phone number must start with 98 and be 10 digits total";
         }
-        
+
         if (!isValidAddress(address)) {
             return "Address must be 5-100 characters";
         }
-        
+
         if (!isValidPassword(password)) {
             return "Password must be 8+ chars with 1 uppercase, 1 lowercase, and 1 number";
         }
-        
-        return null; // No errors
+
+        if (!doPasswordsMatch(password, retypePassword)) {
+            return "Passwords do not match";
+        }
+
+        return null; // No validation errors
+    }
+
+    // 12. Validate uploaded image extension (JPG, JPEG, PNG)
+    public static boolean isValidImageExtension(Part file) {
+        if (file == null || file.getSubmittedFileName() == null) {
+            return false;
+        }
+
+        String fileName = file.getSubmittedFileName().toLowerCase();
+        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png");
     }
 }

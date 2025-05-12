@@ -25,13 +25,13 @@ public class AuthenticationFilter implements Filter {
     private static final String PRODUCT_MANAGEMENT = "/admin/dashboard/products";
     private static final String USER_MANAGEMENT = "/admin/users";
     private static final String ORDER_MANAGEMENT = "/admin/orders";
-    private static final String SHOP = "/shop";
+    private static final String ADD_Products = "/admin/addProduct"; 
     private static final String PRODUCT_DETAILS = "/collections";
     private static final String ABOUT = "/aboutUs";
     private static final String CONTACT = "/contact";
     private static final String USER_ORDERS = "/account/orders";
     private static final String UPDATE = "/update";
-
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // Initialization logic, if required
@@ -55,23 +55,21 @@ public class AuthenticationFilter implements Filter {
                           CookieUtil.getCookie(req, "role").getValue() : null;
 
         if ("admin".equals(userRole)) {
-            // Admin is logged in
             if (uri.endsWith(LOGIN) || uri.endsWith(REGISTER)) {
                 res.sendRedirect(req.getContextPath() + DASHBOARD);
             } else if (uri.endsWith(HOME) || uri.endsWith(ROOT) ||
-                    uri.endsWith(SHOP) || uri.endsWith(PRODUCT_MANAGEMENT) || uri.endsWith(ABOUT) || 
-                    uri.endsWith(CONTACT)) {
+                       uri.endsWith(ADD_Products) || uri.endsWith(PRODUCT_MANAGEMENT) || 
+                       uri.endsWith(ABOUT) || uri.endsWith(CONTACT)) {
                 chain.doFilter(request, response);
             } else {
-                // Redirect admin to dashboard for unauthorized areas
-                //res.sendRedirect(req.getContextPath() + DASHBOARD);
-            	 chain.doFilter(request, response);
+                // Let admin access other allowed pages or restrict if needed
+                chain.doFilter(request, response);
             }
         } else if ("customer".equals(userRole)) {
             // Regular user is logged in
             if (uri.endsWith(LOGIN) || uri.endsWith(REGISTER)) {
                 res.sendRedirect(req.getContextPath() + HOME);
-            } else if (uri.endsWith(HOME) || uri.endsWith(ROOT) || uri.endsWith(SHOP) || 
+            } else if (uri.endsWith(HOME) || uri.endsWith(ROOT) || 
                     uri.endsWith(PRODUCT_DETAILS) || uri.endsWith(ABOUT) || uri.endsWith(CONTACT) ||
                     uri.endsWith(USER_ORDERS) || uri.endsWith(UPDATE)) {
                 chain.doFilter(request, response);
@@ -82,7 +80,7 @@ public class AuthenticationFilter implements Filter {
         } else {
             // Not logged in
             if (uri.endsWith(LOGIN) || uri.endsWith(REGISTER) || uri.endsWith(HOME) || 
-                    uri.endsWith(ROOT) || uri.endsWith(SHOP) || uri.endsWith(PRODUCT_DETAILS) || 
+                    uri.endsWith(ROOT) || uri.endsWith(PRODUCT_DETAILS) || 
                     uri.endsWith(ABOUT) || uri.endsWith(CONTACT)) {
                 chain.doFilter(request, response);
             } else {

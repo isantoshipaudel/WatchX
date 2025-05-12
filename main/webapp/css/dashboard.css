@@ -16,8 +16,8 @@
         
         /* Converted to Sidebar Navigation */
         .sidebar {
-            background-color: #f9f7f5; /* Swapped - was brown, now light */
-            color: #8b7358; /* Swapped - was white, now brown */
+            background-color: #f9f7f5; 
+            color: #8b7358; 
             width: 280px;
             height: 100vh;
             position: fixed;

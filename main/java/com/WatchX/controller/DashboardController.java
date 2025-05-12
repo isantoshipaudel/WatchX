@@ -1,41 +1,59 @@
 package com.WatchX.controller;
 
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import java.io.IOException;
+import com.WatchX.service.DashboardService;
 
-/**
- * Servlet implementation class DashboardController
- */
-@WebServlet(asyncSupported = true, urlPatterns = { "/admin/dashboard" })
+@WebServlet("/admin/dashboard")
 public class DashboardController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public DashboardController() {
-        super();
-        // TODO Auto-generated constructor stub
+    private static final long serialVersionUID = 1L;
+    private DashboardService dashboardService;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            this.dashboardService = new DashboardService();
+        } catch (Exception e) {
+            throw new ServletException("Failed to initialize DashboardService", e);
+        }
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		request.getRequestDispatcher("/WEB-INF/pages/dashboard.jsp").forward(request, response);
-	}
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            // Get statistics from service
+            int totalUsers = dashboardService.getTotalUsers();
+            int totalCustomers = dashboardService.getTotalCustomers();
+            int totalProducts = dashboardService.getTotalProducts();
+            int totalOrders = dashboardService.getTotalOrders();
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+            // Set data as request attributes for JSP
+            request.setAttribute("totalUsers", totalUsers);
+            request.setAttribute("totalCustomers", totalCustomers);
+            request.setAttribute("totalProducts", totalProducts);
+            request.setAttribute("totalOrders", totalOrders);
 
+            // Forward to dashboard JSP (make sure the path is correct and has leading slash)
+            System.out.println("Forwarding to /WEB-INF/pages/dashboard.jsp"); // Debug line
+            request.getRequestDispatcher("/WEB-INF/pages/dashboard.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Log actual error
+            throw new ServletException("Error processing dashboard request", e);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            if (dashboardService != null) {
+                dashboardService.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Error closing DashboardService: " + e.getMessage());
+        }
+    }
 }
