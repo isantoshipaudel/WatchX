@@ -9,6 +9,7 @@ HttpSession userSession = request.getSession(false);
 String currentUser = (String) (userSession != null ? userSession.getAttribute("username") : null);
 pageContext.setAttribute("currentUser", currentUser);
 %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -522,29 +523,60 @@ tbody tr:hover {
 		gap: 12px;
 		align-items: stretch;
 	}
-	.search-container form {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-	.search-container input[type="text"] {
-		padding: 8px 12px;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-		flex: 1;
-	}
-	.search-container .btn-search {
-		padding: 8px 16px;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-	}
-	.search-container .search-icon {
-		font-size: 16px;
-		color: #555;
-	}
+	.action-bar {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    width: 100%;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.search-container form {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 16px;
+}
+
+.search-container input[type="text"] {
+    flex: 1;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    font-size: 14px;
+    outline: none;
+    height: 40px;
+}
+
+.btn-search {
+    padding: 0 20px;
+    background-color: #6b563d;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: 14px;
+    height: 40px;
+    transition: background-color 0.3s;
+}
+
+.btn-search:hover {
+    background-color: #5a4a32;
+}
 }
 
 @media ( max-width : 768px) {
@@ -598,6 +630,7 @@ to {
 </style>
 </head>
 <body>
+	
 	<jsp:include page="message_handler.jsp" />
 
 	<!-- Sidebar Navigation -->

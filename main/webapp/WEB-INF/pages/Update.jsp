@@ -109,7 +109,7 @@ body {
 
 .right-panel h2 {
     font-size: 36px;
-    margin-top: 130px;  
+    margin-top: 60px;  
     margin-bottom: 10px;
     color: #333;
     font-weight: 600;

@@ -48,7 +48,7 @@ public class DeleteController extends HttpServlet {
             boolean deleted = productService.deleteProduct(productNo);
 
             if (deleted) {
-                request.getSession().setAttribute("success", "Product deleted successfully");
+            	session.setAttribute("success", "Product " + productNo + " deleted successfully");
                 System.out.println("Product " + productNo + " deleted");
             } else {
                 request.getSession().setAttribute("error", "Failed to delete product");
