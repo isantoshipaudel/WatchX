@@ -6,7 +6,7 @@ import jakarta.servlet.http.*;
 import java.io.*;
 import com.WatchX.model.ProductModel;
 import com.WatchX.service.AddService;
-import com.WatchX.util.*;
+import com.WatchX.util.ImageUtil;
 
 @WebServlet("/admin/updateProduct")
 @MultipartConfig(
@@ -23,9 +23,9 @@ public class UpdateProductController extends HttpServlet {
     public void init() throws ServletException {
         try {
             this.productService = new AddService();
-            imageUtil = new ImageUtil();
+            this.imageUtil = new ImageUtil();
         } catch (Exception e) {
-            throw new ServletException("Failed to initialize ProductService", e);
+            throw new ServletException("Failed to initialize services", e);
         }
     }
 
@@ -33,7 +33,6 @@ public class UpdateProductController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
-        // Check if user is admin
         if (!isAdmin(session)) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -97,33 +96,48 @@ public class UpdateProductController extends HttpServlet {
             // Handle image upload
             Part filePart = request.getPart("productImage");
             if (filePart != null && filePart.getSize() > 0) {
-                String fileName = imageUtil.generateUniqueFileName(filePart);
-                String imagePath = "resources/images/uploads/" + fileName;
-
-                if (imageUtil.uploadImage(filePart, "uploads", fileName)) {
-                    // Delete old image if not default
-                    if (existingProduct.getimage_path() != null &&
-                        !existingProduct.getimage_path().equals("uploads/default_product.jpg")) {
-                        File oldImage = new File(request.getServletContext().getRealPath("") +
-                                        existingProduct.getimage_path());
-                        if (oldImage.exists()) oldImage.delete();
-                    }
-                    existingProduct.setimage_path(imagePath);
+                // Get the upload directory path
+                String uploadDir = request.getServletContext().getRealPath("/resources/images/uploads");
+                File uploadDirFile = new File(uploadDir);
+                
+                // Create directory if it doesn't exist
+                if (!uploadDirFile.exists()) {
+                    uploadDirFile.mkdirs();
                 }
+
+                // Generate unique filename
+                String fileName = imageUtil.generateUniqueFileName(filePart);
+                
+                // Save the file
+                filePart.write(uploadDir + File.separator + fileName);
+                
+                // Delete old image if it exists and isn't the default
+                if (existingProduct.getimage_path() != null && 
+                    !existingProduct.getimage_path().equals("resources/images/uploads/default_product.jpg")) {
+                    String oldImagePath = request.getServletContext().getRealPath(existingProduct.getimage_path());
+                    File oldImage = new File(oldImagePath);
+                    if (oldImage.exists()) {
+                        oldImage.delete();
+                    }
+                }
+                
+                // Update the image path in the product
+                existingProduct.setimage_path("resources/images/uploads/" + fileName);
             }
 
             // Update product in database
             boolean success = productService.updateProduct(existingProduct);
 
             if (success) {
-                request.setAttribute("success", "Product updated successfully");
+                session.setAttribute("successMessage", "Product #" + productNo + " updated successfully!");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
             } else {
-                request.setAttribute("error", "Failed to update product");
+                session.setAttribute("errorMessage", "Failed to update product");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
             }
-            request.setAttribute("product", existingProduct);
-            forwardToUpdatePage(request, response);
 
         } catch (Exception e) {
+            e.printStackTrace();
             request.setAttribute("error", "Error updating product: " + e.getMessage());
             if (existingProduct != null) {
                 request.setAttribute("product", existingProduct);

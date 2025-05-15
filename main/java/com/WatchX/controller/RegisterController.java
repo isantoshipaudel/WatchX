@@ -109,8 +109,8 @@ public class RegisterController extends HttpServlet {
 
     private void handleSuccess(HttpServletRequest req, HttpServletResponse resp, String message, String redirectPage)
             throws ServletException, IOException {
-        req.setAttribute("success", message);
-        req.getRequestDispatcher(redirectPage).forward(req, resp);
+        req.getSession().setAttribute("successMessage", message);
+        resp.sendRedirect(req.getContextPath() + "/login");
     }
 
     private void handleError(HttpServletRequest req, HttpServletResponse resp, String message)

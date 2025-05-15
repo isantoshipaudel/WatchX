@@ -22,7 +22,7 @@ pageContext.setAttribute("firstName", firstName);
 	font-size: 28px;
 	display: flex;
 	align-items: center;
-	gap: 15px;s
+	gap: 15px;
 }
 
 .profile-icon {
@@ -67,9 +67,10 @@ pageContext.setAttribute("firstName", firstName);
 
 		<div class="header-right">
 			<div class="search-container">
-				<form class="search-form" action="/search" method="get">
+				<form class="search-form" action="${contextPath}/search"
+					method="get">
 					<input type="text" class="search-input" name="query"
-						placeholder="Search watches...">
+						placeholder="Search watches..." required>
 					<button type="submit" class="search-button">Search</button>
 				</form>
 			</div>

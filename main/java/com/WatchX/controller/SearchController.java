@@ -25,20 +25,26 @@ public class SearchController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String searchQuery = request.getParameter("query");
+        String contextPath = request.getContextPath();
 
         if (searchQuery == null || searchQuery.trim().isEmpty()) {
-            request.setAttribute("error", "Search term cannot be empty.");
-            request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+            response.sendRedirect(contextPath + "/collections");
             return;
         }
 
         try {
             List<ProductModel> searchResults = productService.searchProducts(searchQuery);
+            request.setAttribute("searchQuery", searchQuery);
             request.setAttribute("products", searchResults);
-            request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+            
+            if (searchResults.isEmpty()) {
+                request.setAttribute("message", "No products found matching: " + searchQuery);
+            }
+            
+            request.getRequestDispatcher("/WEB-INF/pages/collections.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Error searching products: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/pages/collections.jsp").forward(request, response);
         }
     }
 

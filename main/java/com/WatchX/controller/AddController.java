@@ -33,16 +33,41 @@ public class AddController extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        
         try {
+            // Validate input
+            String productNumberStr = request.getParameter("productNumber");
+            if (productNumberStr == null || productNumberStr.trim().isEmpty()) {
+                session.setAttribute("errorMessage", "Product number is required.");
+                response.sendRedirect(request.getContextPath() + "/admin/addProduct");
+                return;
+            }
+
             // Get form parameters
-            int productNo = Integer.parseInt(request.getParameter("productNumber"));
+            int productNo = Integer.parseInt(productNumberStr);
             String productName = request.getParameter("productName");
             String description = request.getParameter("description");
             String category = request.getParameter("category");
             String unitPrice = request.getParameter("unitPrice");
             
+            // Validate required fields
+            if (productName == null || productName.trim().isEmpty() ||
+                category == null || category.trim().isEmpty() ||
+                unitPrice == null || unitPrice.trim().isEmpty()) {
+                session.setAttribute("errorMessage", "All required fields must be filled out.");
+                response.sendRedirect(request.getContextPath() + "/admin/addProduct");
+                return;
+            }
+            
             // Handle file upload
             Part filePart = request.getPart("productImage");
+            if (filePart == null || filePart.getSize() == 0) {
+                session.setAttribute("errorMessage", "Product image is required.");
+                response.sendRedirect(request.getContextPath() + "/admin/addProduct");
+                return;
+            }
+
             String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
             
             // Get the absolute path to the webapp directory
@@ -74,20 +99,20 @@ public class AddController extends HttpServlet {
 
             // Add product to database
             boolean success = productService.addProduct(product);
-
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard/products?success=true");
+                session.setAttribute("successMessage", "Product added successfully!");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
             } else {
-                request.setAttribute("error", "Failed to add product. Please try again.");
-                doGet(request, response);
+                session.setAttribute("errorMessage", "Failed to add product. Please try again.");
+                response.sendRedirect(request.getContextPath() + "/admin/addProduct");
             }
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid product number format. Please enter a valid number.");
-            doGet(request, response);
+            session.setAttribute("errorMessage", "Invalid product number format. Please enter a valid number.");
+            response.sendRedirect(request.getContextPath() + "/admin/addProduct");
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error: " + e.getMessage());
-            doGet(request, response);
+            session.setAttribute("errorMessage", "Error: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/admin/addProduct");
         }
     }
 

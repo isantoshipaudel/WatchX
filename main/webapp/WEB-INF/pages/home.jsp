@@ -12,6 +12,7 @@
 </head>
 <body>
 	<jsp:include page="header.jsp" />
+	<jsp:include page="message_handler.jsp"/>
 	<section class="main">
 		<div class="main-text">
 			<h1>Explore The</h1>
@@ -20,7 +21,7 @@
 					Exceptional Accuracy.</strong>
 			</p>
 			<p>High range of designer watches for both men and women.</p>
-			<button>Shop Now</button>
+			<a href="${pageContext.request.contextPath}/collections" class="shop-now-btn"><button>Shop Now</button></a>
 		</div>
 		<div class="main-image">
 			<img src="resources/images/WX (2).png">

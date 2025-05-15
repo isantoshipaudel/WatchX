@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/update")
 public class UpdateController extends HttpServlet {
@@ -139,12 +140,17 @@ public class UpdateController extends HttpServlet {
                     System.out.println("[DEBUG] Updated session username to: " + updatedUser.getUserName());
                 }
                 
-                SessionUtil.setAttribute(req, "message", "Profile updated successfully!");
-                resp.sendRedirect(req.getContextPath() + "/update");
+                // Set success message in session
+                HttpSession session = req.getSession();
+                session.setAttribute("successMessage", "Profile updated successfully!");
+                
+                // Redirect to home page
+                resp.sendRedirect(req.getContextPath() + "/home");
+                return;
             } else {
                 System.out.println("[ERROR] Profile update failed");
                 req.setAttribute("user", updatedUser);
-                req.setAttribute("error", "Update failed. Please check your information.");
+                req.getSession().setAttribute("errorMessage", "Update failed. Please check your information.");
                 req.getRequestDispatcher("/WEB-INF/pages/Update.jsp").forward(req, resp);
             }
             

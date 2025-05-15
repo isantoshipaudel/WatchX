@@ -23,6 +23,17 @@ public class DashboardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    private void processRequest(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
         try {
             // Get statistics from service
             int totalUsers = dashboardService.getTotalUsers();
@@ -36,12 +47,27 @@ public class DashboardController extends HttpServlet {
             request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("totalOrders", totalOrders);
 
-            // Forward to dashboard JSP (make sure the path is correct and has leading slash)
-            System.out.println("Forwarding to /WEB-INF/pages/dashboard.jsp"); // Debug line
+            // Check for any session messages and transfer them to request
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                String successMsg = (String) session.getAttribute("successMessage");
+                if (successMsg != null) {
+                    request.setAttribute("successMessage", successMsg);
+                    session.removeAttribute("successMessage");
+                }
+                
+                String errorMsg = (String) session.getAttribute("errorMessage");
+                if (errorMsg != null) {
+                    request.setAttribute("errorMessage", errorMsg);
+                    session.removeAttribute("errorMessage");
+                }
+            }
+
+            // Forward to dashboard JSP
             request.getRequestDispatcher("/WEB-INF/pages/dashboard.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace(); // Log actual error
+            e.printStackTrace();
             throw new ServletException("Error processing dashboard request", e);
         }
     }

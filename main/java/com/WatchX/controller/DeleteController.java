@@ -15,7 +15,6 @@ public class DeleteController extends HttpServlet {
     public void init() throws ServletException {
         try {
             productService = new AddService();
-            System.out.println("DeleteController initialized");
         } catch (Exception e) {
             throw new ServletException("Failed to initialize AddService", e);
         }
@@ -26,12 +25,9 @@ public class DeleteController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         
-        // Enhanced role checking
-        String role = (session != null) ? (String) session.getAttribute("role") : null;
-        
-        if (!"admin".equals(role)) {
-            System.out.println("Unauthorized delete attempt: Role = " + role);
-            request.setAttribute("error", "You don't have permission to perform this action");
+        // Check if user is logged in and is admin
+        if (session == null || !"admin".equals(session.getAttribute("role"))) {
+            session.setAttribute("errorMessage", "You don't have permission to perform this action");
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
@@ -39,7 +35,7 @@ public class DeleteController extends HttpServlet {
         try {
             String productNoStr = request.getParameter("productNo");
             if (productNoStr == null || productNoStr.trim().isEmpty()) {
-                request.getSession().setAttribute("error", "Product ID is required");
+                session.setAttribute("errorMessage", "Product ID is required");
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
                 return;
             }
@@ -48,23 +44,30 @@ public class DeleteController extends HttpServlet {
             boolean deleted = productService.deleteProduct(productNo);
 
             if (deleted) {
-            	session.setAttribute("success", "Product " + productNo + " deleted successfully");
-                System.out.println("Product " + productNo + " deleted");
+                session.setAttribute("successMessage", "Product #" + productNo + " deleted successfully!");
             } else {
-                request.getSession().setAttribute("error", "Failed to delete product");
-                System.out.println("Failed to delete product " + productNo);
+                session.setAttribute("errorMessage", "Failed to delete product #" + productNo);
             }
             
-            // Redirect to the correct dashboard products page
             response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
+            
         } catch (NumberFormatException e) {
-            request.getSession().setAttribute("error", "Invalid product ID");
-            System.err.println("Invalid product number: " + e.getMessage());
+            session.setAttribute("errorMessage", "Invalid product ID format");
             response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
         } catch (Exception e) {
-            request.getSession().setAttribute("error", "Error deleting product: " + e.getMessage());
-            System.err.println("Delete error: " + e.getMessage());
+            session.setAttribute("errorMessage", "Error deleting product: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/admin/dashboard/products");
+        }
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            if (productService != null) {
+                productService.close();
+            }
+        } catch (Exception e) {
+            System.err.println("Error closing product service: " + e.getMessage());
         }
     }
 }

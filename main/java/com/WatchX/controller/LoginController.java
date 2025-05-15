@@ -4,7 +4,6 @@ import java.io.IOException;
 import com.WatchX.model.UserModel;
 import com.WatchX.service.LoginService;
 import com.WatchX.util.CookieUtil;
-import com.WatchX.util.SessionUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -37,14 +36,17 @@ public class LoginController extends HttpServlet {
         Boolean loginStatus = loginService.loginUser(userModel);
 
         if (loginStatus != null && loginStatus) {
-            HttpSession session = req.getSession();
+            HttpSession session = req.getSession(true); 
             session.setAttribute("user", userModel);
-            SessionUtil.setAttribute(req, "username", username);
+            session.setAttribute("username", username);
             
             // Set role in both session and cookie
             String role = "Santoshi".equalsIgnoreCase(username) ? "admin" : "customer";
             session.setAttribute("role", role);  
             CookieUtil.addCookie(resp, "role", role, 5 * 30);
+            
+            // Set success message in session
+            session.setAttribute("successMessage", "Welcome back, " + username + "!");
 
             if ("admin".equals(role)) {
                 resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
@@ -61,7 +63,7 @@ public class LoginController extends HttpServlet {
         String errorMessage = (loginStatus == null) 
             ? "Our server is under maintenance. Please try again later!"
             : "User details mismatch. Please try again!";
-        req.setAttribute("error", errorMessage);
+        req.setAttribute("errorMessage", errorMessage);
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, resp);
     }
 }
