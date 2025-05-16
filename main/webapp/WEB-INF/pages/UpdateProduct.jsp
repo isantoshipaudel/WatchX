@@ -644,22 +644,6 @@
             document.getElementById('file-name').textContent = fileName;
         });
         
-        // Add animation to form elements
-        document.addEventListener('DOMContentLoaded', function() {
-            const formElements = document.querySelectorAll('.form-group');
-            
-            formElements.forEach((element, index) => {
-                element.style.opacity = 0;
-                element.style.transform = 'translateY(20px)';
-                element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                element.style.transitionDelay = `${index * 0.07}s`;
-                
-                setTimeout(() => {
-                    element.style.opacity = 1;
-                    element.style.transform = 'translateY(0)';
-                }, 100);
-            });
-        });
     </script>
 </body>
 </html>
