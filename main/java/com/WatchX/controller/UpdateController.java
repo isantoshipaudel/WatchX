@@ -209,10 +209,20 @@ public class UpdateController extends HttpServlet {
                 // Redirect to home page
                 resp.sendRedirect(req.getContextPath() + "/home");
                 return;
+            } else if (result == null) {
+                System.out.println("[ERROR] System error during profile update");
+                req.setAttribute("user", updatedUser);
+                session.setAttribute("errorMessage", "A system error occurred. Please try again later.");
+                req.getRequestDispatcher("/WEB-INF/pages/Update.jsp").forward(req, resp);
             } else {
                 System.out.println("[ERROR] Profile update failed");
                 req.setAttribute("user", updatedUser);
-                session.setAttribute("errorMessage", "Update failed. Please try again.");
+                // Check if the error is due to duplicate contact number
+                if (updateService.isContactNumberExistsForOtherUser(contactNo, currentUsername)) {
+                    session.setAttribute("errorMessage", "This contact number is already registered with another account.");
+                } else {
+                    session.setAttribute("errorMessage", "Update failed. Please try again.");
+                }
                 req.getRequestDispatcher("/WEB-INF/pages/Update.jsp").forward(req, resp);
             }
             

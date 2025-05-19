@@ -32,6 +32,14 @@ public class UpdateService {
             dbConn.setAutoCommit(false);
             System.out.println("[UpdateService] Starting update for: " + currentUsername);
 
+            // Get current user's data first
+            UserModel currentUser = getUserByUsername(currentUsername);
+            if (currentUser == null) {
+                System.err.println("[UpdateService] Could not find current user data");
+                dbConn.rollback();
+                return false;
+            }
+
             // Check if new username exists (if changed)
             if (!userModel.getUserName().equals(currentUsername)) {
                 System.out.println("[UpdateService] Checking new username availability");
@@ -48,6 +56,25 @@ public class UpdateService {
                 System.err.println("[UpdateService] Email in use by another user");
                 dbConn.rollback();
                 return false;
+            }
+
+            // Check contact number uniqueness only if it's different from current
+            if (!userModel.getContactNumber().equals(currentUser.getContactNumber())) {
+                System.out.println("[UpdateService] Contact number changed, checking uniqueness");
+                String query = "SELECT COUNT(*) FROM User WHERE contactNo = ? AND username != ?";
+                try (PreparedStatement stmt = dbConn.prepareStatement(query)) {
+                    stmt.setString(1, userModel.getContactNumber());
+                    stmt.setString(2, currentUsername);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next() && rs.getInt(1) > 0) {
+                            System.err.println("[UpdateService] Contact number in use by another user");
+                            dbConn.rollback();
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                System.out.println("[UpdateService] Contact number unchanged");
             }
 
             // Build dynamic query based on whether password is being updated
@@ -73,7 +100,7 @@ public class UpdateService {
                 stmt.setString(paramIndex++, userModel.getAddress());
                 stmt.setString(paramIndex++, userModel.getContactNumber());
                 stmt.setString(paramIndex++, userModel.getEmail());
-                stmt.setString(7, currentUsername);
+                
                 // Add password parameter if updating
                 if (updatePassword) {
                     String encryptedPassword = PasswordUtil.encrypt(userModel.getUserName(), userModel.getPassword());
@@ -238,6 +265,45 @@ public class UpdateService {
             }
         } catch (SQLException e) {
             System.err.println("[UpdateService] Email check error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean isContactNumberExistsForOtherUser(String contactNumber, String username) {
+        // First check if this is the user's own current contact number
+        String currentContactQuery = "SELECT contactNo FROM User WHERE username = ?";
+        try (PreparedStatement stmt = dbConn.prepareStatement(currentContactQuery)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String currentContactNumber = rs.getString("contactNo");
+                    // If the user is keeping their current number, allow it
+                    if (contactNumber.equals(currentContactNumber)) {
+                        System.out.println("[UpdateService] User is keeping their current contact number");
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("[UpdateService] Error checking current contact number: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Then check if the number exists for any other user
+        String query = "SELECT COUNT(*) FROM User WHERE contactNo = ? AND username != ?";
+        try (PreparedStatement stmt = dbConn.prepareStatement(query)) {
+            stmt.setString(1, contactNumber);
+            stmt.setString(2, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                boolean exists = rs.next() && rs.getInt(1) > 0;
+                if (exists) {
+                    System.out.println("[UpdateService] Contact number already exists for another user");
+                }
+                return exists;
+            }
+        } catch (SQLException e) {
+            System.err.println("[UpdateService] Contact number check error: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
