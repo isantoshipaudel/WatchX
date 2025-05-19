@@ -369,8 +369,6 @@ pageContext.setAttribute("firstName", firstName);
       flex-direction: column;
       transition: var(--transition);
       border: 1px solid rgba(139, 115, 88, 0.05);
-      max-width: 600px;
-      margin: 0 auto;
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -598,9 +596,9 @@ pageContext.setAttribute("firstName", firstName);
     }
     
     /* Responsive adjustments */
-    @media (max-width: 1200px) {
+    @media (max-width: 1400px) {
       .stats-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
       }
       
       .stat-card {
@@ -609,6 +607,10 @@ pageContext.setAttribute("firstName", firstName);
     }
     
     @media (max-width: 992px) {
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
       .sidebar {
         width: 80px;
         padding: 20px 0;
@@ -658,8 +660,8 @@ pageContext.setAttribute("firstName", firstName);
     }
     
     @media (max-width: 768px) {
-      .table-responsive {
-        overflow-x: auto;
+      .stats-container {
+        grid-template-columns: 1fr;
       }
       
       .welcome-card {
@@ -671,6 +673,10 @@ pageContext.setAttribute("firstName", firstName);
       
       .welcome-decoration {
         margin-top: 10px;
+      }
+      
+      .stat-card:last-child {
+        grid-column: 1;
       }
     }
   </style>
@@ -723,6 +729,7 @@ pageContext.setAttribute("firstName", firstName);
       <h1>Dashboard Overview</h1>
       
       <div class="stats-container">
+        <!-- First row -->
         <div class="stat-card">
           <div class="stat-icon"><i class="fas fa-users"></i></div>
           <div class="stat-value">${totalUsers}</div>
@@ -735,6 +742,7 @@ pageContext.setAttribute("firstName", firstName);
           <div class="stat-title">Total Customers</div>
         </div>
         
+        <!-- Second row -->
         <div class="stat-card">
           <div class="stat-icon"><i class="fas fa-box"></i></div>
           <div class="stat-value">${totalProducts}</div>
@@ -746,31 +754,16 @@ pageContext.setAttribute("firstName", firstName);
           <div class="stat-value">${totalOrders}</div>
           <div class="stat-title">Total Orders</div>
         </div>
+        
+        <!-- Third row - centered -->
+        <div class="stat-card" style="grid-column: 1 / span 2;">
+          <div class="stat-icon"><i class="fas fa-tags"></i></div>
+          <div class="stat-value">${totalCategories}</div>
+          <div class="stat-title">Product Categories</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <script>
-    // Add subtle animation to stat cards on scroll
-    document.addEventListener('DOMContentLoaded', function() {
-      const statCards = document.querySelectorAll('.stat-card');
-      
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = 1;
-            entry.target.style.transform = 'translateY(0)';
-          }
-        });
-      }, { threshold: 0.1 });
-      
-      statCards.forEach((card, index) => {
-        card.style.opacity = 0;
-        card.style.transform = 'translateY(20px)';
-        card.style.transitionDelay = `${index * 0.1}s`;
-        observer.observe(card);
-      });
-    });
-  </script>
 </body>
 </html>

@@ -22,7 +22,7 @@ public class ValidationUtil {
 
     // 4. Validate name fields (2-50 chars, letters, spaces, and hyphens)
     public static boolean isValidName(String name) {
-        return name != null && name.matches("^[a-zA-Z\\s-]{2,50}$");
+        return name != null && name.matches("^[a-zA-Z-]{2,50}$");
     }
 
     // 5. Validate username (4-20 chars, alphanumeric + underscore)

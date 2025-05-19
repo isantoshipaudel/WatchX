@@ -9,7 +9,7 @@ public class UserModel {
     private String contactNumber;
     private String address;
     private String password;
-    
+     
     public UserModel() {
     }
     public UserModel(String userName, String password) {

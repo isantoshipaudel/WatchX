@@ -46,7 +46,6 @@ public class UpdateController extends HttpServlet {
             if (dbUser == null) {
                 System.out.println("[ERROR] User not found in database for username: " + username);
                 req.setAttribute("error", "User profile not found");
-                // Debug: List all available usernames
                 updateService.debugListAllUsernames();
             } else {
                 System.out.println("[SUCCESS] Retrieved user data:");
@@ -83,6 +82,7 @@ public class UpdateController extends HttpServlet {
         
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
+        HttpSession session = req.getSession();
         
         try {
             System.out.println("\n===== [UpdateController] doPost() START =====");
@@ -96,30 +96,93 @@ public class UpdateController extends HttpServlet {
             }
             System.out.println("[DEBUG] Updating profile for: " + currentUsername);
 
-            // 2. Prepare updated user data
-            UserModel updatedUser = new UserModel();
-            updatedUser.setUserName(req.getParameter("username"));
-            updatedUser.setFirstName(req.getParameter("firstName"));
-            updatedUser.setLastName(req.getParameter("lastName"));
-            updatedUser.setEmail(req.getParameter("Email"));
-            updatedUser.setContactNumber(req.getParameter("contactNo"));
-            updatedUser.setAddress(req.getParameter("address"));
-
-            // Add password update handling
+            // 2. Get form parameters
+            String firstName = req.getParameter("firstName").trim();
+            String lastName = req.getParameter("lastName").trim();
+            String email = req.getParameter("Email").trim();
+            String contactNo = req.getParameter("contactNo").trim();
+            String address = req.getParameter("address").trim();
+            String username = req.getParameter("username").trim();
             String newPassword = req.getParameter("newPassword");
             String confirmPassword = req.getParameter("confirmPassword");
-            
+
+            // 3. Validate all inputs
+            StringBuilder errorMessage = new StringBuilder();
+
+            // Validate first name
+            if (firstName.isEmpty()) {
+                errorMessage.append("First name is required. ");
+            } else if (firstName.matches(".*\\d+.*")) {
+                errorMessage.append("First name should not contain numbers. ");
+            }
+
+            // Validate last name
+            if (lastName.isEmpty()) {
+                errorMessage.append("Last name is required. ");
+            } else if (lastName.matches(".*\\d+.*")) {
+                errorMessage.append("Last name should not contain numbers. ");
+            }
+
+            // Validate email
+            if (email.isEmpty()) {
+                errorMessage.append("Email is required. ");
+            } else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                errorMessage.append("Invalid email format. ");
+            }
+
+            // Validate contact number
+            if (contactNo.isEmpty()) {
+                errorMessage.append("Contact number is required. ");
+            } else if (!contactNo.matches("\\d{10}")) {
+                errorMessage.append("Contact number must be exactly 10 digits. ");
+            }
+
+            // Validate username
+            if (username.isEmpty()) {
+                errorMessage.append("Username is required. ");
+            }
+
+            // Validate password if being updated
             if (newPassword != null && !newPassword.isEmpty()) {
-                if (newPassword.equals(confirmPassword)) {
-                    updatedUser.setPassword(newPassword);
-                    System.out.println("[DEBUG] Password will be updated");
-                } else {
-                    System.out.println("[ERROR] Password confirmation mismatch");
-                    req.setAttribute("user", updatedUser);
-                    req.setAttribute("error", "Password and confirmation do not match");
-                    req.getRequestDispatcher("/WEB-INF/pages/Update.jsp").forward(req, resp);
-                    return;
+                if (!newPassword.equals(confirmPassword)) {
+                    errorMessage.append("Password and confirmation do not match. ");
+                } else if (newPassword.length() < 6) {
+                    errorMessage.append("Password must be at least 6 characters long. ");
                 }
+            }
+
+            // If there are validation errors, return to the form
+            if (errorMessage.length() > 0) {
+                System.out.println("[ERROR] Validation failed: " + errorMessage.toString());
+                
+                // Create user model to preserve form data
+                UserModel formData = new UserModel();
+                formData.setUserName(username);
+                formData.setFirstName(firstName);
+                formData.setLastName(lastName);
+                formData.setEmail(email);
+                formData.setContactNumber(contactNo);
+                formData.setAddress(address);
+                
+                req.setAttribute("user", formData);
+                session.setAttribute("errorMessage", errorMessage.toString().trim());
+                req.getRequestDispatcher("/WEB-INF/pages/Update.jsp").forward(req, resp);
+                return;
+            }
+
+            // 4. Create updated user model
+            UserModel updatedUser = new UserModel();
+            updatedUser.setUserName(username);
+            updatedUser.setFirstName(firstName);
+            updatedUser.setLastName(lastName);
+            updatedUser.setEmail(email);
+            updatedUser.setContactNumber(contactNo);
+            updatedUser.setAddress(address);
+            
+            // Set password if it's being updated
+            if (newPassword != null && !newPassword.isEmpty()) {
+                updatedUser.setPassword(newPassword);
+                System.out.println("[DEBUG] Password will be updated");
             }
 
             System.out.println("[DEBUG] New profile data:");
@@ -127,7 +190,7 @@ public class UpdateController extends HttpServlet {
             System.out.println(" - Email: " + updatedUser.getEmail());
             System.out.println(" - Contact: " + updatedUser.getContactNumber());
 
-            // 3. Perform update
+            // 5. Perform update
             System.out.println("[DEBUG] Attempting profile update...");
             Boolean result = updateService.updateCustomerInfo(updatedUser, currentUsername);
 
@@ -141,7 +204,6 @@ public class UpdateController extends HttpServlet {
                 }
                 
                 // Set success message in session
-                HttpSession session = req.getSession();
                 session.setAttribute("successMessage", "Profile updated successfully!");
                 
                 // Redirect to home page
@@ -150,16 +212,15 @@ public class UpdateController extends HttpServlet {
             } else {
                 System.out.println("[ERROR] Profile update failed");
                 req.setAttribute("user", updatedUser);
-                req.getSession().setAttribute("errorMessage", "Update failed. Please check your information.");
+                session.setAttribute("errorMessage", "Update failed. Please try again.");
                 req.getRequestDispatcher("/WEB-INF/pages/Update.jsp").forward(req, resp);
             }
             
         } catch (Exception e) {
             System.err.println("[CRITICAL ERROR] in doPost(): " + e.getMessage());
             e.printStackTrace();
-            out.println("<h3>System Error During Update</h3>");
-            out.println("<p>We encountered an error updating your profile.</p>");
-            out.println("<p>Error details: " + e.getMessage() + "</p>");
+            session.setAttribute("errorMessage", "System error occurred. Please try again later.");
+            resp.sendRedirect(req.getContextPath() + "/update");
         } finally {
             System.out.println("===== [UpdateController] doPost() END =====");
             out.close();

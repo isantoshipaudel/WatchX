@@ -40,12 +40,14 @@ public class DashboardController extends HttpServlet {
             int totalCustomers = dashboardService.getTotalCustomers();
             int totalProducts = dashboardService.getTotalProducts();
             int totalOrders = dashboardService.getTotalOrders();
+            int totalCategories = dashboardService.getTotalCategories();
 
             // Set data as request attributes for JSP
             request.setAttribute("totalUsers", totalUsers);
             request.setAttribute("totalCustomers", totalCustomers);
             request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("totalOrders", totalOrders);
+            request.setAttribute("totalCategories", totalCategories);
 
             // Check for any session messages and transfer them to request
             HttpSession session = request.getSession(false);

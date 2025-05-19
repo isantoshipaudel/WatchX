@@ -39,13 +39,17 @@ public class RegisterService {
         }
 
         try {
-            // Check for duplicate username or email
+            // Check for duplicate username, email, or contact number
             if (isUsernameExists(userModel.getUserName())) {
                 System.err.println("Username already exists.");
                 return false;
             }
             if (isEmailExists(userModel.getEmail())) {
                 System.err.println("Email already exists.");
+                return false;
+            }
+            if (isContactNumberExists(userModel.getContactNumber())) {
+                System.err.println("Contact number already exists.");
                 return false;
             }
 
@@ -123,6 +127,35 @@ public class RegisterService {
             }
         } catch (SQLException e) {
             System.err.println("Error checking email existence: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a contact number already exists in the database.
+     *
+     * @param contactNo the contact number to check
+     * @return true if contact number exists, false otherwise
+     */
+    public boolean isContactNumberExists(String contactNo) {
+        if (dbConn == null) {
+            System.err.println("Database connection is not available.");
+            return false;
+        }
+
+        String query = "SELECT COUNT(*) FROM User WHERE contactNo = ?";
+
+        try (PreparedStatement stmt = dbConn.prepareStatement(query)) {
+            stmt.setString(1, contactNo);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking contact number existence: " + e.getMessage());
             e.printStackTrace();
         }
 

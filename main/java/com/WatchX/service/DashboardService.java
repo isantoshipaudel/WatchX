@@ -42,6 +42,32 @@ public class DashboardService {
         }
     }
 
+    public double getTotalRevenue() throws SQLException {
+        String sql = "SELECT SUM(CAST(p.unitPrice AS DECIMAL(10,2))) " +
+                     "FROM `Order` o " +
+                     "JOIN Product p ON o.productNo = p.productNo";
+        try (PreparedStatement stmt = dbConn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getDouble(1) : 0.0;
+        }
+    }
+
+    public int getTotalProductsInStock() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Product WHERE isAvailable = true";
+        try (PreparedStatement stmt = dbConn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
+    public int getTotalCategories() throws SQLException {
+        String sql = "SELECT COUNT(DISTINCT category) FROM Product";
+        try (PreparedStatement stmt = dbConn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
     public void close() throws SQLException {
         if (dbConn != null) {
             dbConn.close();

@@ -79,7 +79,13 @@ public class RegisterController extends HttpServlet {
         if (ValidationUtil.isNullOrEmpty(password))
             return "Password is required.";
 
-        // Validate fields
+        // Validate name fields (must contain only letters)
+        if (!ValidationUtil.isValidName(firstName))
+            return "First name must contain only letters (and hyphens for compound names).";
+        if (!ValidationUtil.isValidName(lastName))
+            return "Last name must contain only letters (and hyphens for compound names).";
+
+        // Other validations
         if (!ValidationUtil.isAlphanumericStartingWithLetter(username))
             return "Username must start with a letter and contain only letters and numbers.";
         if (!ValidationUtil.isValidEmail(email))
@@ -88,6 +94,10 @@ public class RegisterController extends HttpServlet {
             return "Phone number must be 10 digits and start with 98.";
         if (!ValidationUtil.isValidPassword(password))
             return "Password must be at least 8 characters long, with 1 uppercase letter, 1 number, and 1 symbol.";
+
+        // Check for duplicate contact number
+        if (registerService.isContactNumberExists(contact))
+            return "This contact number is already registered.";
 
         return null; // All validations passed
     }
